@@ -1,0 +1,75 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<script>
+  function pickRandom<T>(array: T[]) {
+    const index = Math.floor(Math.random() * array.length);
+    return array[index];
+  }
+
+  const canvas = document.querySelector("canvas");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const context = canvas.getContext("2d");
+
+  let x = canvas.width / 2 - 100;
+  let y = canvas.height / 2 - 100;
+
+  const randomColor = (prev?: string) => {
+    const array = ["#f00", "#0f0", "#00f"].filter((s) => s !== prev);
+    return pickRandom(array);
+  };
+
+  let color = randomColor();
+
+  function randomMod() {
+    return pickRandom([3, 5, 7.5]);
+  }
+
+  let xMod = randomMod();
+  let yMod = randomMod();
+
+  function process() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = color;
+    context.fillRect(x, y, 200, 200);
+    x += xMod;
+    y += yMod;
+
+    if (xMod > 0 && x + 200 > canvas.width) {
+      color = randomColor(color);
+      xMod = -randomMod();
+    }
+
+    if (xMod < 0 && x < 0) {
+      color = randomColor(color);
+      xMod = randomMod();
+    }
+
+    if (yMod > 0 && y + 200 > canvas.height) {
+      color = randomColor(color);
+      yMod = -randomMod();
+    }
+
+    if (yMod < 0 && y < 0) {
+      color = randomColor(color);
+      yMod = randomMod();
+    }
+
+    requestAnimationFrame(process);
+  }
+
+  process();
+
+  window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+</script>
+
+<Layout title="experiments">
+  <div class="flex justify-center items-center h-svh">
+    <canvas></canvas>
+  </div>
+</Layout>
